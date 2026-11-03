@@ -632,6 +632,8 @@ class Checker:
             days_str, status_code = api.get_status(cookie)
             result.days = days_str
 
+            before_points_str, before_points_num = api.get_points(cookie)
+
             self._log(cookie_idx, domain, LogEmoji.CHECKIN, "执行签到")
             checkin_result = api.checkin(cookie)
             result.status = checkin_result["status"]
@@ -640,6 +642,15 @@ class Checker:
             self._log(cookie_idx, domain, LogEmoji.POINTS, "查询总积分")
             points_str, points_num = api.get_points(cookie)
             result.points_total = points_str
+
+            if result.code == CheckinStatus.SUCCESS:
+                if before_points_str == "None 积分" or points_str == "None 积分" or points_num <= before_points_num:
+                    result.status = "签到未确认"
+                    result.code = CheckinStatus.FAILURE
+                    result.points = "0"
+                    logger.warning(f"{LogEmoji.WARNING} Cookie {cookie_idx} 在 {domain} 的签到接口返回成功，但积分未增加；请到网站核实。")
+                else:
+                    result.points = str(points_num - before_points_num)
 
             if self.config.exchange_plan in self.config.EXCHANGE_PLANS:
                 required_points = self.config.EXCHANGE_PLANS[self.config.exchange_plan]
@@ -717,7 +728,10 @@ def main():
 
             logger.info(f"{LogEmoji.START} 步骤 3: 格式化结果")
             payload = checker.format_results()
-            logger.info(f"\n{LogEmoji.END} ========== 签到总结 ==========\n{payload['title']}\n{render_payload(payload)}")
+            if config.verbose:
+                logger.info(f"\n{LogEmoji.END} ========== 签到总结 ==========\n{payload['title']}\n{render_payload(payload)}")
+            else:
+                logger.info(f"{LogEmoji.END} 签到总结: {payload['title']}")
 
     except Exception as e:
         logger.error(f"{LogEmoji.ERROR} 主程序执行过程中发生未预期的错误: {e}")
