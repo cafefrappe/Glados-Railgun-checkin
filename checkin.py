@@ -517,8 +517,11 @@ class PushDeerBackend(PushBackend):
 
     def send(self, title: str, payload: dict) -> bool:
         try:
-            PushDeer(pushkey=self.push_key).send_text(title, desp=self._render(payload))
-            return True
+            sent = PushDeer(pushkey=self.push_key).send_text(title, desp=self._render(payload))
+            if sent is True:
+                return True
+            logger.error(f"{LogEmoji.ERROR} [{self.name}] 推送失败: PushDeer 未确认发送成功")
+            return False
         except Exception as e:
             logger.error(f"{LogEmoji.ERROR} [{self.name}] 推送失败: {e}")
             return False
