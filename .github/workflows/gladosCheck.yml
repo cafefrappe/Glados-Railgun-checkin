@@ -1,14 +1,9 @@
-name: auto check
+name: Railgun daily checkin
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
-    paths-ignore:
-      - 'README.md'
-      - 'imgs/**'
   schedule:
-    - cron: '18 9,12 * * *'
+    - cron: '30 9 * * *'
       timezone: 'Asia/Shanghai'
 
 jobs:
