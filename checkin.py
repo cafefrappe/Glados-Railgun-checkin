@@ -110,7 +110,7 @@ class Config:
     DEFAULT_VERBOSE = False
 
     """默认域名"""
-    DOMAINS = ["glados.cloud", "railgun.info"]
+    DOMAINS = ["railgun.info"]
 
     """兑换计划列表"""
     EXCHANGE_PLANS = {
@@ -684,7 +684,7 @@ class Checker:
             CheckinStatus.REPEAT: LogEmoji.REPEAT,
             CheckinStatus.FAILURE: LogEmoji.ERROR,
         }
-        title = f"GLaDOS 签到 · 成功 {success_count} · 失败 {fail_count} · 重复 {repeat_count}"
+        title = f"Railgun 签到 · 成功 {success_count} · 失败 {fail_count} · 重复 {repeat_count}"
 
         rows = []
         for i, res in enumerate(results, 1):
